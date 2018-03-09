@@ -1,0 +1,5 @@
+# Directories #
+.ipynb_checkpoints
+
+# OS Generated Files #
+.DS_Store
