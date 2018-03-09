@@ -1,5 +1,6 @@
 # Directories #
 .ipynb_checkpoints
+assignment3/cs231n/datasets/coco_captioning
 
 # OS Generated Files #
 .DS_Store
