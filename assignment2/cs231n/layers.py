@@ -22,10 +22,18 @@ def affine_forward(x, w, b):
     """
     out = None
     ###########################################################################
-    # TODO: Implement the affine forward pass. Store the result in out. You   #
+    # Implement the affine forward pass. Store the result in out. You         #
     # will need to reshape the input into rows.                               #
     ###########################################################################
-    pass
+    N = x.shape[0]
+    D = 1
+    for i in x.shape:
+        D = D * i
+    D = D // N
+    M = w.shape[1]
+
+    x = np.reshape(x, (N, D))
+    out = np.matmul(x, w) + np.tile(b, (N, 1))
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -42,6 +50,7 @@ def affine_backward(dout, cache):
     - cache: Tuple of:
       - x: Input data, of shape (N, d_1, ... d_k)
       - w: Weights, of shape (D, M)
+      - b: Biases, of shape (M,)
 
     Returns a tuple of:
     - dx: Gradient with respect to x, of shape (N, d1, ..., d_k)
@@ -53,7 +62,7 @@ def affine_backward(dout, cache):
     ###########################################################################
     # TODO: Implement the affine backward pass.                               #
     ###########################################################################
-    pass
+    z = np.matmul(x, w) + np.tile(b, (N, 1)) # activation
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -73,9 +82,9 @@ def relu_forward(x):
     """
     out = None
     ###########################################################################
-    # TODO: Implement the ReLU forward pass.                                  #
+    # Implement the ReLU forward pass.                                  #
     ###########################################################################
-    pass
+    out = np.maximum(x, 0)
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
