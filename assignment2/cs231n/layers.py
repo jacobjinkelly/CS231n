@@ -32,8 +32,7 @@ def affine_forward(x, w, b):
     D = D // N
     M = w.shape[1]
 
-    x = np.reshape(x, (N, D))
-    out = np.matmul(x, w) + np.tile(b, (N, 1))
+    out = np.matmul(np.reshape(x, (N, D)), w) + np.tile(b, (N, 1))
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -60,9 +59,18 @@ def affine_backward(dout, cache):
     x, w, b = cache
     dx, dw, db = None, None, None
     ###########################################################################
-    # TODO: Implement the affine backward pass.                               #
+    # Implement the affine backward pass.                                     #
     ###########################################################################
-    z = np.matmul(x, w) + np.tile(b, (N, 1)) # activation
+    N = x.shape[0]
+    D = 1
+    for i in x.shape:
+        D = D * i
+    D = D // N
+    M = w.shape[1]
+
+    dx = np.reshape(np.matmul(dout, w.T), x.shape)
+    dw = np.matmul(np.reshape(x, (N, D)).T, dout)
+    db = np.matmul(dout.T, np.ones(N))
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -82,7 +90,7 @@ def relu_forward(x):
     """
     out = None
     ###########################################################################
-    # Implement the ReLU forward pass.                                  #
+    # Implement the ReLU forward pass.                                        #
     ###########################################################################
     out = np.maximum(x, 0)
     ###########################################################################
