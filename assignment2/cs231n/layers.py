@@ -20,7 +20,6 @@ def affine_forward(x, w, b):
     - out: output, of shape (N, M)
     - cache: (x, w, b)
     """
-    out = None
     ###########################################################################
     # Implement the affine forward pass. Store the result in out. You         #
     # will need to reshape the input into rows.                               #
@@ -57,7 +56,6 @@ def affine_backward(dout, cache):
     - db: Gradient with respect to b, of shape (M,)
     """
     x, w, b = cache
-    dx, dw, db = None, None, None
     ###########################################################################
     # Implement the affine backward pass.                                     #
     ###########################################################################
