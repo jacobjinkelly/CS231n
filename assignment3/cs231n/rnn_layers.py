@@ -26,11 +26,10 @@ def rnn_step_forward(x, prev_h, Wx, Wh, b):
 
     Returns a tuple of:
     - next_h: Next hidden state, of shape (N, H)
-    - cache: Tuple of values needed for the backward pass.
+    - cache: (next_h, x, Wx, prev_h, Wh, b)
     """
-    next_h, cache = None, None
     ##############################################################################
-    # TODO: Implement a single forward step for the vanilla RNN. Store the next  #
+    # Implement a single forward step for the vanilla RNN. Store the next        #
     # hidden state and any values you need for the backward pass in the next_h   #
     # and cache variables respectively.                                          #
     ##############################################################################
@@ -40,6 +39,7 @@ def rnn_step_forward(x, prev_h, Wx, Wh, b):
     ##############################################################################
     #                               END OF YOUR CODE                             #
     ##############################################################################
+    cache = (next_h, x, Wx, prev_h, Wh, b)
     return next_h, cache
 
 
@@ -48,8 +48,14 @@ def rnn_step_backward(dnext_h, cache):
     Backward pass for a single timestep of a vanilla RNN.
 
     Inputs:
-    - dnext_h: Gradient of loss with respect to next hidden state
-    - cache: Cache object from the forward pass
+    - dnext_h: Gradient of loss with respect to next hidden state of shape (N, H)
+    - cache: Tuple of:
+      - z: Activation for previous timestep of shape (N, H)
+      - x: Input data for this timestep, of shape (N, D).
+      - prev_h: Hidden state from previous timestep, of shape (N, H)
+      - Wx: Weight matrix for input-to-hidden connections, of shape (D, H)
+      - Wh: Weight matrix for hidden-to-hidden connections, of shape (H, H)
+      - b: Biases of shape (H,)
 
     Returns a tuple of:
     - dx: Gradients of input data, of shape (N, D)
@@ -58,14 +64,22 @@ def rnn_step_backward(dnext_h, cache):
     - dWh: Gradients of hidden-to-hidden weights, of shape (H, H)
     - db: Gradients of bias vector, of shape (H,)
     """
-    dx, dprev_h, dWx, dWh, db = None, None, None, None, None
+    next_h, x, Wx, prev_h, Wh, b = cache
     ##############################################################################
-    # TODO: Implement the backward pass for a single step of a vanilla RNN.      #
+    # Implement the backward pass for a single step of a vanilla RNN.            #
     #                                                                            #
     # HINT: For the tanh function, you can compute the local derivative in terms #
     # of the output value from tanh.                                             #
     ##############################################################################
-    pass
+    N = x.shape[0]
+
+    dz = np.multiply(dnext_h, (1 - next_h**2)) # Hadamard Product
+
+    dx = np.matmul(dz, Wx.T)
+    dprev_h = np.matmul(dz, Wh.T)
+    dWx = np.matmul(x.T, dz)
+    dWh = np.matmul(prev_h.T, dz)
+    db = np.matmul(dz.T, np.ones(N))
     ##############################################################################
     #                               END OF YOUR CODE                             #
     ##############################################################################
