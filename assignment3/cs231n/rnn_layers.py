@@ -104,22 +104,21 @@ def rnn_forward(x, h0, Wx, Wh, b):
     - h: Hidden states for the entire timeseries, of shape (N, T, H).
     - cache: Values needed in the backward pass
     """
-    h, cache = None, None
     ##############################################################################
-    # TODO: Implement forward pass for a vanilla RNN running on a sequence of    #
+    # Implement forward pass for a vanilla RNN running on a sequence of          #
     # input data. You should use the rnn_step_forward function that you defined  #
     # above. You can use a for loop to help compute the forward pass.            #
     ##############################################################################
-    N, T, D, H = x.shape[0], x.shape[1], x.shape[2], h0.shape[1]
+    N, T, H = x.shape[0], x.shape[1], h0.shape[1]
     prev_h = h0
-    h = np.zeros((T, N, H))
+    h = np.zeros((T, N, H)) # easier for indexing in for loop
     cache = []
     for i in range(T):
         new_h, new_cache = rnn_step_forward(np.take(x, i, axis = 1), prev_h, Wx, Wh, b)
         prev_h = new_h
         h[i] = new_h
         cache.append(new_cache)
-    h = np.transpose(h, (1, 0, 2))
+    h = np.transpose(h, (1, 0, 2)) # flip dimensions back to what we want
     ##############################################################################
     #                               END OF YOUR CODE                             #
     ##############################################################################
@@ -132,6 +131,7 @@ def rnn_backward(dh, cache):
 
     Inputs:
     - dh: Upstream gradients of all hidden states, of shape (N, T, H)
+    - cache: From rnn_forward
 
     Returns a tuple of:
     - dx: Gradient of inputs, of shape (N, T, D)
@@ -146,7 +146,25 @@ def rnn_backward(dh, cache):
     # sequence of data. You should use the rnn_step_backward function that you   #
     # defined above. You can use a for loop to help compute the backward pass.   #
     ##############################################################################
-    pass
+    N, T, H = dh.shape
+    D = cache[0][1].shape[1]
+
+    dh0 = np.zeros((N, H))
+    dx = np.zeros((T, N, D))
+    dWx = np.zeros((D, H))
+    dWh = np.zeros((H, H))
+    db = np.zeros(H)
+
+    dh = np.transpose(dh, (1, 0, 2)) # easier to index
+    dh_prev = np.zeros((N,H))
+    for i in reversed(range(T)):
+        dx_i, dh_prev, dWx_i, dWh_i, db_i = rnn_step_backward(dh[i] + dh_prev, cache[i])
+        dh0 = dh_prev
+        dx[i] = dx_i
+        dWx += dWx_i
+        dWh += dWh_i
+        db += db_i
+    dx = np.transpose(dx, (1, 0, 2))
     ##############################################################################
     #                               END OF YOUR CODE                             #
     ##############################################################################
