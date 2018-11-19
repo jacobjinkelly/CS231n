@@ -140,9 +140,8 @@ def rnn_backward(dh, cache):
     - dWh: Gradient of hidden-to-hidden weights, of shape (H, H)
     - db: Gradient of biases, of shape (H,)
     """
-    dx, dh0, dWx, dWh, db = None, None, None, None, None
     ##############################################################################
-    # TODO: Implement the backward pass for a vanilla RNN running an entire      #
+    # Implement the backward pass for a vanilla RNN running an entire            #
     # sequence of data. You should use the rnn_step_backward function that you   #
     # defined above. You can use a for loop to help compute the backward pass.   #
     ##############################################################################
@@ -159,11 +158,11 @@ def rnn_backward(dh, cache):
     dh_prev = np.zeros((N,H))
     for i in reversed(range(T)):
         dx_i, dh_prev, dWx_i, dWh_i, db_i = rnn_step_backward(dh[i] + dh_prev, cache[i])
-        dh0 = dh_prev
         dx[i] = dx_i
         dWx += dWx_i
         dWh += dWh_i
         db += db_i
+    dh0 = dh_prev
     dx = np.transpose(dx, (1, 0, 2))
     ##############################################################################
     #                               END OF YOUR CODE                             #
@@ -186,16 +185,16 @@ def word_embedding_forward(x, W):
     - out: Array of shape (N, T, D) giving word vectors for all input words.
     - cache: Values needed for the backward pass
     """
-    out, cache = None, None
     ##############################################################################
-    # TODO: Implement the forward pass for word embeddings.                      #
+    # Implement the forward pass for word embeddings.                            #
     #                                                                            #
     # HINT: This can be done in one line using NumPy's array indexing.           #
     ##############################################################################
-    pass
+    out = W[x]
     ##############################################################################
     #                               END OF YOUR CODE                             #
     ##############################################################################
+    cache = W, x
     return out, cache
 
 
